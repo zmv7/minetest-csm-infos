@@ -10,6 +10,14 @@ minetest.register_chatcommand("nname", {
 toggle = 1
 return true, 'Punch node to check its name'
 end})
+
+minetest.register_chatcommand("node", {
+    description = "Check unpointable node's name where you standing",
+    func = function(param)
+local node = core.get_node_or_nil(core.localplayer:get_pos())
+core.display_chat_message('Name: "'..node.name..'" param1: '..node.param1..' param2: '..node.param2)
+end})
+
 minetest.register_chatcommand("witem", {
   description = "View wielded item name",
   func = function()

@@ -15,6 +15,7 @@ minetest.register_chatcommand("node", {
     description = "Check unpointable node's name where you standing",
     func = function(param)
 local node = core.get_node_or_nil(core.localplayer:get_pos())
+if not node then return false, 'No node!' end
 core.display_chat_message('Name: "'..node.name..'" param1: '..node.param1..' param2: '..node.param2)
 end})
 

@@ -13,7 +13,7 @@ core.register_chatcommand("nname", {
 end})
 
 core.register_chatcommand("pos", {
-  description = "Check unpointable nodename where you standing",
+  description = "Check unpointable nodename where you standing or specified pos",
   params = "[pos]",
   func = function(param)
 	local pos = core.string_to_pos(param) or vector.round(core.localplayer:get_pos())
@@ -51,6 +51,19 @@ core.register_chatcommand("sinfo", {
 	core.display_chat_message(sinfo)
 end})
 
+local function superconcat(def, lvl)
+	if not lvl then lvl = 1 end
+	local out = {}
+	for k,v in pairs(def) do
+		if type(v) == "table" then
+			v = superconcat(v, lvl+1)
+		end
+		table.insert(out,("\t"):rep(lvl)..tostring(k).." = "..tostring(v))
+	end
+	table.sort(out)
+	return "{\n"..table.concat(out,"\n").."\n"..("\t"):rep(lvl-1).."}"
+end
+
 core.register_chatcommand("idef", {
   description = "View item definition",
   params = "[itemname]",
@@ -63,7 +76,7 @@ core.register_chatcommand("idef", {
 	if not idef then
 		return false, "Unknown item"
 	end
-	core.show_formspec("itemdef","size[10,10]textarea[0.3,0.3;10,11.2;idef;"..F(iname)..";"..F(dump(idef)).."]")
+	core.show_formspec("itemdef","size[10,10]textarea[0.3,0.3;10,11.2;idef;"..F(iname)..";"..F(superconcat(idef)).."]")
 end})
 core.register_chatcommand("ndef", {
   description = "View node definition",
@@ -77,5 +90,6 @@ core.register_chatcommand("ndef", {
 	if not ndef then
 		return false, "Unknown node"
 	end
-	core.show_formspec("nodedef","size[10,10]textarea[0.3,0.3;10,11.2;ndef;"..F(nname)..";"..F(dump(ndef)).."]")
+	core.show_formspec("nodedef","size[10,10]textarea[0.3,0.3;10,11.2;ndef;"..F(nname)..";"..F(superconcat(ndef)).."]")
 end})
+

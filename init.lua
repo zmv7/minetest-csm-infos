@@ -51,17 +51,28 @@ core.register_chatcommand("sinfo", {
 	core.display_chat_message(sinfo)
 end})
 
-local function superconcat(def, lvl)
+local function superconcat(t, delim, lvl)
+	if type(t) ~= "table" then
+		return "Invalid paramater #1: table expected, got "..type(t)
+	end
+	if not delim then delim = ",\n" end
 	if not lvl then lvl = 1 end
 	local out = {}
-	for k,v in pairs(def) do
+	for k,v in pairs(t) do
 		if type(v) == "table" then
-			v = superconcat(v, lvl+1)
+			v = superconcat(v, delim, lvl+1)
+		elseif type(v) == "string" then
+			v = '"'..v..'"'
+		else
+			v = tostring(v)
 		end
-		table.insert(out,("\t"):rep(lvl)..tostring(k).." = "..tostring(v))
+		table.insert(out,("\t"):rep(lvl)..tostring(k).." = "..v)
+	end
+	if #out == 0 then
+		return "{}"
 	end
 	table.sort(out)
-	return "{\n"..table.concat(out,"\n").."\n"..("\t"):rep(lvl-1).."}"
+	return "{"..delim:gsub(",","")..table.concat(out,delim)..delim:gsub(",","")..("\t"):rep(lvl-1).."}"
 end
 
 core.register_chatcommand("idef", {
@@ -92,4 +103,3 @@ core.register_chatcommand("ndef", {
 	end
 	core.show_formspec("nodedef","size[10,10]textarea[0.3,0.3;10,11.2;ndef;"..F(nname)..";"..F(superconcat(ndef)).."]")
 end})
-

@@ -103,3 +103,24 @@ core.register_chatcommand("ndef", {
 	end
 	core.show_formspec("nodedef","size[10,10]textarea[0.3,0.3;10,11.2;ndef;"..F(nname)..";"..F(superconcat(ndef)).."]")
 end})
+
+local function kbtoh(val)
+	if type(val) ~= "number" then
+		return
+	end
+	local lvls = {"K", "M", "G", "T"}
+	local lvl = 1
+	while val > 1024 do
+		val = val/1024
+		lvl = lvl + 1
+	end
+	local str = tostring(val):match("%d+%.%d%d")
+	return (str or val).." "..lvls[lvl].."B"
+end
+
+minetest.register_chatcommand("luamem",{
+  description = "Check Lua's memory consumption",
+  func = function(param)
+	local mem = collectgarbage("count")
+	return true, kbtoh(mem)
+end})

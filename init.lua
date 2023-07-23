@@ -26,7 +26,12 @@ end})
 core.register_chatcommand("witem", {
   description = "View wielded item name",
   func = function(param)
-	core.display_chat_message("Wielded item is "..core.colorize("#FF0",core.localplayer:get_wielded_item():get_name()))
+	local witem = core.localplayer:get_wielded_item()
+	if witem then
+		local winame = witem:get_name()
+		local wear = witem:get_wear()
+		return true, "Wielded item is "..core.colorize("#FF0",winame..(wear and wear > 0 and " | Wear: "..tostring(wear).." / 65536" or ""))
+	end
 end})
 
 local function rs(color,name)
@@ -48,7 +53,7 @@ core.register_chatcommand("sinfo", {
 		rs(csmr.read_itemdefs," ItemDefs ").."|"..
 		rs(csmr.read_nodedefs," NodeDefs ").."|"..
 		rs(csmr.lookup_nodes," LookupNodes")
-	core.display_chat_message(sinfo)
+	return true, sinfo
 end})
 
 local function superconcat(t, delim, lvl)
@@ -80,14 +85,17 @@ core.register_chatcommand("idef", {
   params = "[itemname]",
   func = function(param)
 	local iname = param
+	local wear
 	if not param or param == "" then
-		iname = core.localplayer:get_wielded_item():get_name()
+		local witem = core.localplayer:get_wielded_item()
+		iname = witem and witem:get_name()
+		wear = witem and witem:get_wear()
 	end
 	local idef = core.get_item_def(iname)
 	if not idef then
 		return false, "Unknown item"
 	end
-	core.show_formspec("itemdef","size[10,10]textarea[0.3,0.3;10,11.2;idef;"..F(iname)..";"..F(superconcat(idef)).."]")
+	core.show_formspec("itemdef","size[10,10]textarea[0.3,0.3;10,11.2;idef;"..F(iname..(wear and wear > 0 and " | Wear: "..tostring(wear).." / 65536" or ""))..";"..F(superconcat(idef)).."]")
 end})
 core.register_chatcommand("ndef", {
   description = "View node definition",
@@ -95,7 +103,8 @@ core.register_chatcommand("ndef", {
   func = function(param)
 	local nname = param
 	if not param or param == "" then
-		nname = core.localplayer:get_wielded_item():get_name()
+		local witem = core.localplayer:get_wielded_item()
+		nname = witem and witem:get_name()
 	end
 	local ndef = core.get_node_def(nname)
 	if not ndef then

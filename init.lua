@@ -19,8 +19,10 @@ core.register_chatcommand("pos", {
 	local pos = core.string_to_pos(param) or vector.round(core.localplayer:get_pos())
 	local strpos = core.pos_to_string(pos)
 	local node = core.get_node_or_nil(pos)
-	if not node then return false, "No node!" end
-	core.show_formspec("poscheck","size[5,4]field[0.3,0.3;5,1;pos;Position:;"..strpos:gsub("[%(%)]","").."]field[0.3,1.3;5,1;node;Node:;"..node.name.."]field[0.3,2.3;5,1;p1;Param1:;"..node.param1.."]field[0.3,3.3;5,1;p2;Param2:;"..node.param2.."]")
+	if not node then
+		return false, "No node!"
+	end
+	core.show_formspec("poscheck","size[5,4]field[0.3,0.4;5,1;pos;Position:;"..strpos:gsub("[%(%)]","").."]field[0.3,1.4;5,1;node;Node:;"..node.name.."]field[0.3,2.4;5,1;p1;Param1:;"..node.param1.." (light: "..math.floor(node.param1 / 16)..")]field[0.3,3.4;5,1;p2;Param2:;"..node.param2.."]")
 end})
 
 core.register_chatcommand("witem", {

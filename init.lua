@@ -59,6 +59,9 @@ core.register_chatcommand("sinfo", {
 end})
 
 local function superconcat(t, delim, lvl)
+	if lvl and lvl > 1000 then
+		return "Cyclyc recursion"
+	end
 	if type(t) ~= "table" then
 		return "Invalid paramater #1: table expected, got "..type(t)
 	end
